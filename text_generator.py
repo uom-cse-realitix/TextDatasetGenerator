@@ -1,6 +1,6 @@
 from string import Template
 
-def generate_operation(template_operations, operation_type, objects=None, no_op=False):
+def generate_operation(template_operations, operation_type=None, objects=None, no_op=False):
     '''
     Generates operation texts from templates and returns list.
 
@@ -13,19 +13,28 @@ def generate_operation(template_operations, operation_type, objects=None, no_op=
     generated_op = ''
     generated_ops = []
     for op in template_operations:
-        #Adding operation placeholder at the end of operate template
-        op = op + ', $operation' + '\n'
-        s = Template(op)
+        if operation_type != None:
+            #Adding operation placeholder at the end of operate template
+            op = op + ', $operation' + '\n'
+            s = Template(op)
 
-        if not no_op and objects:
-             for obj in objects:
-                #Replacing placeholders
-                generated_op = s.substitute(object=obj, operation=operation_type)
-                # print(generated_op)
+            if not no_op and objects:
+                 for obj in objects:
+                    #Replacing placeholders
+                    generated_op = s.substitute(object=obj, operation=operation_type)
+                    # print(generated_op)
+                    generated_ops.append(generated_op)
+            else:
+                generated_op = s.substitute(operation=operation_type)
                 generated_ops.append(generated_op)
         else:
-            generated_op = s.substitute(operation=operation_type)
-            generated_ops.append(generated_op)            
+            op = op + '\n'
+            s = Template(op)
+
+            for obj in objects:
+                generated_op = s.substitute(object=obj)
+                generated_ops.append(generated_op)
+
     return generated_ops
 
 
@@ -104,10 +113,14 @@ for line in open('/home/ashen/Documents/GitHubRepos/pykaldi/examples/setups/zami
     if line.strip():
         no_Op_lines.append(line.rstrip('\n'))
 
-dataset_text_file = open(r'/home/ashen/Documents/Dataset_text_classification.txt', 'w+')
+# dataset_text_file = open(r'/home/ashen/Documents/Dataset_text_classification.txt', 'w+')
+#
+# dataset_text_file.writelines(generate_operation(locate_operations, operation_type='1', objects=OBJECTS))
+# dataset_text_file.writelines(generate_operation(describe_operations, operation_type='2', objects=OBJECTS))
+# dataset_text_file.writelines(generate_operation(no_Op_lines, operation_type='3', no_op=True))
+#
+# dataset_text_file.close()
 
-dataset_text_file.writelines(generate_operation(locate_operations, '1', objects=OBJECTS))
-dataset_text_file.writelines(generate_operation(describe_operations, '2', objects=OBJECTS))
-dataset_text_file.writelines(generate_operation(no_Op_lines, '3', no_op=True))
-
-dataset_text_file.close()
+with open(r'/home/ashen/Documents/Dataset_AE_positive.txt', 'w+') as f:
+    f.writelines(generate_operation(locate_operations, objects=OBJECTS))
+    f.writelines(generate_operation(describe_operations, objects=OBJECTS))

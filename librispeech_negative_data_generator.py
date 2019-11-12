@@ -15,13 +15,13 @@ def get_transcripts(FILE_PATH):
             r = random.randint(1, int(3 * (len(line.split(" ")) / 4)))
             t_lines.append(line.split(' ', r)[r].lower())
 
-def write_dataset_file(DATASET_FILE):
-    with open(DATASET_FILE, 'a+') as file:
-        for line in t_lines:
+def write_dataset_file(DATASET_FILE, lines):
+    with open(DATASET_FILE, 'w+') as file:
+        for line in lines:
             file.write(line)
 
 
-DATASET_FILE = '/home/ashen/Documents/Libri_dataset.txt'
+DATASET_FILE = '/home/ashen/Documents/Dataset_AE_negative.txt'
 t_lines = []
 
 transcripts = get_transcript_file_list("/media/ashen/52DAB5C7DAB5A81D/Users/Ashen/Downloads/LibriSpeech/train-clean-100")
@@ -29,5 +29,5 @@ transcripts = get_transcript_file_list("/media/ashen/52DAB5C7DAB5A81D/Users/Ashe
 for file_no in range(len(transcripts)):
     get_transcripts(transcripts[file_no])
     if len(t_lines) > 10000 or file_no == len(transcripts) - 1:
-        write_dataset_file(DATASET_FILE)
+        write_dataset_file(DATASET_FILE, t_lines)
         t_lines = []
